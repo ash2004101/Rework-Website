@@ -11,6 +11,11 @@ This document serves as a live map of the codebase.
 
 ## Core Components
 
-### React Application
-*   **Description**: A modern Single Page Application built with Vite, React, TypeScript, and Tailwind CSS.
+### React Application (Frontend)
+*   **Description**: A modern Single Page Application built with Vite, React, TypeScript, and Tailwind CSS. Employs `framer-motion` for premium scroll animations.
 *   **Key Files**: `reworkiq-app/src/App.tsx`, `reworkiq-app/tailwind.config.js`
+*   **Routing**: Uses `react-router-dom` with a global `ScrollToTop` listener to ensure clean page transitions.
+
+### Google Apps Script (Backend)
+*   **Description**: A serverless function bound to a Google Sheet. It accepts CORS `POST` requests from the frontend, logs lead data to the Sheet with auto-formatting, and sends beautiful HTML email notifications via `MailApp`.
+*   **Key Files**: Configured via `.env` pointing to the deployed Web App URL.
