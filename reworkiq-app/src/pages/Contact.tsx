@@ -27,6 +27,50 @@ const FaqItem = ({ question, answer }: { question: string, answer: string }) => 
 };
 
 export default function Contact() {
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    interest: '',
+    message: ''
+  });
+  
+  const [submitStatus, setSubmitStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
+  const [errorMessage, setErrorMessage] = useState('');
+
+  const GOOGLE_SCRIPT_WEB_APP_URL = import.meta.env.VITE_GOOGLE_SCRIPT_WEB_APP_URL;
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSubmitStatus('submitting');
+    setErrorMessage('');
+
+    try {
+      const response = await fetch(GOOGLE_SCRIPT_WEB_APP_URL, {
+        method: 'POST',
+        body: JSON.stringify(formData),
+      });
+
+      const result = await response.json();
+      
+      if (result.result === 'success') {
+        setSubmitStatus('success');
+        setFormData({ name: '', email: '', phone: '', interest: '', message: '' });
+      } else {
+        throw new Error(result.error || 'Failed to submit form');
+      }
+    } catch (error) {
+      console.error('Submission error:', error);
+      setSubmitStatus('error');
+      setErrorMessage('There was a problem submitting your request. Please try again or email us directly.');
+    }
+  };
+
   return (
     <main>
       {/* Hero Section */}
@@ -96,25 +140,42 @@ export default function Contact() {
 
             {/* Contact Form (Right) */}
             <div className="bg-surface-container-lowest p-stack-lg border border-outline-variant rounded-lg shadow-sm">
-              <form className="space-y-6">
+              <form className="space-y-6" onSubmit={handleSubmit}>
+                {submitStatus === 'success' && (
+                  <div className="bg-[#0D9488]/10 border border-[#0D9488]/30 text-[#0D9488] p-4 rounded-lg flex items-start gap-3">
+                    <span className="material-symbols-outlined">check_circle</span>
+                    <div>
+                      <h4 className="font-headline-sm font-bold mb-1">Message Sent Successfully!</h4>
+                      <p className="font-body-sm text-sm">Thank you for reaching out. Our team will review your request and get back to you within 24 hours.</p>
+                    </div>
+                  </div>
+                )}
+                
+                {submitStatus === 'error' && (
+                  <div className="bg-error/10 border border-error/30 text-error p-4 rounded-lg flex items-start gap-3">
+                    <span className="material-symbols-outlined">error</span>
+                    <p className="font-body-sm text-sm">{errorMessage}</p>
+                  </div>
+                )}
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <label className="font-label-md text-label-md text-on-surface-variant">Full Name *</label>
-                    <input className="w-full bg-surface border border-outline-variant rounded-DEFAULT p-3 font-body-md text-body-md form-input-focus" placeholder="John Doe" required type="text" />
+                    <input name="name" value={formData.name} onChange={handleChange} disabled={submitStatus === 'submitting'} className="w-full bg-surface border border-outline-variant rounded-DEFAULT p-3 font-body-md text-body-md form-input-focus disabled:opacity-50" placeholder="John Doe" required type="text" />
                   </div>
                   <div className="space-y-2">
                     <label className="font-label-md text-label-md text-on-surface-variant">Work Email *</label>
-                    <input className="w-full bg-surface border border-outline-variant rounded-DEFAULT p-3 font-body-md text-body-md form-input-focus" placeholder="john@company.com" required type="email" />
+                    <input name="email" value={formData.email} onChange={handleChange} disabled={submitStatus === 'submitting'} className="w-full bg-surface border border-outline-variant rounded-DEFAULT p-3 font-body-md text-body-md form-input-focus disabled:opacity-50" placeholder="john@company.com" required type="email" />
                   </div>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <label className="font-label-md text-label-md text-on-surface-variant">Phone Number</label>
-                    <input className="w-full bg-surface border border-outline-variant rounded-DEFAULT p-3 font-body-md text-body-md form-input-focus" placeholder="+91 00000 00000" type="tel" />
+                    <input name="phone" value={formData.phone} onChange={handleChange} disabled={submitStatus === 'submitting'} className="w-full bg-surface border border-outline-variant rounded-DEFAULT p-3 font-body-md text-body-md form-input-focus disabled:opacity-50" placeholder="+91 00000 00000" type="tel" />
                   </div>
                   <div className="space-y-2">
                     <label className="font-label-md text-label-md text-on-surface-variant">Interest In *</label>
-                    <select className="w-full bg-surface border border-outline-variant rounded-DEFAULT p-3 font-body-md text-body-md form-input-focus appearance-none" required defaultValue="">
+                    <select name="interest" value={formData.interest} onChange={handleChange} disabled={submitStatus === 'submitting'} className="w-full bg-surface border border-outline-variant rounded-DEFAULT p-3 font-body-md text-body-md form-input-focus appearance-none disabled:opacity-50" required>
                       <option disabled value="">Select a Service</option>
                       <option value="audit">Website Audit</option>
                       <option value="seo">SEO Optimization</option>
@@ -126,12 +187,16 @@ export default function Contact() {
                 </div>
                 <div className="space-y-2">
                   <label className="font-label-md text-label-md text-on-surface-variant">Message *</label>
-                  <textarea className="w-full bg-surface border border-outline-variant rounded-DEFAULT p-3 font-body-md text-body-md form-input-focus" placeholder="Tell us about your project goals and current challenges..." required rows={4}></textarea>
+                  <textarea name="message" value={formData.message} onChange={handleChange} disabled={submitStatus === 'submitting'} className="w-full bg-surface border border-outline-variant rounded-DEFAULT p-3 font-body-md text-body-md form-input-focus disabled:opacity-50" placeholder="Tell us about your project goals and current challenges..." required rows={4}></textarea>
                 </div>
                 <div className="pt-4">
-                  <button className="w-full md:w-auto bg-[#0D9488] text-white px-12 py-4 rounded-DEFAULT font-label-md text-label-md hover:brightness-110 transition-all cursor-pointer active:scale-95 flex items-center justify-center gap-2" type="submit">
-                    Send Message
-                    <span className="material-symbols-outlined">send</span>
+                  <button disabled={submitStatus === 'submitting'} className="w-full md:w-auto bg-[#0D9488] text-white px-12 py-4 rounded-DEFAULT font-label-md text-label-md hover:brightness-110 transition-all cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed active:scale-95 flex items-center justify-center gap-2" type="submit">
+                    {submitStatus === 'submitting' ? 'Sending...' : 'Send Message'}
+                    {submitStatus === 'submitting' ? (
+                      <span className="material-symbols-outlined animate-spin">refresh</span>
+                    ) : (
+                      <span className="material-symbols-outlined">send</span>
+                    )}
                   </button>
                   <p className="mt-4 font-label-sm text-label-sm text-outline">By clicking send, you agree to our Privacy Policy.</p>
                 </div>
