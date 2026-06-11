@@ -206,13 +206,17 @@ export default function Contact() {
 
           {/* Full Width Map */}
           <div className="rounded-lg overflow-hidden border border-outline-variant h-[400px] relative shadow-sm">
-            <div className="absolute inset-0 bg-surface-container flex items-center justify-center">
-              <div className="text-center p-6">
-                <span className="material-symbols-outlined text-4xl text-outline mb-2">map</span>
-                <p className="font-label-md text-label-md text-outline">Map of Namakkal Center</p>
-              </div>
-            </div>
-            <img className="w-full h-full object-cover mix-blend-multiply opacity-40 hover:opacity-70 transition-opacity duration-500 cursor-pointer" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDk2p9I8J3Zqk-j8glSuViUgVsnnGTjKcDu0K2XYX8J0fmqA6pK_cuYnsxdHoLN72RDQGLQiH9NZaZCmzEF1DOcipLxgQnIUj8NxLZ356iAh7dngTJ5s38Ob8O174IaKFRyun7aaPOXDuEaJA1L1_rKPQQeNCKIwzyWNTQETJ1xckKcsV_OcTrJj_XWjGlRFbH9LHAM3ictD7aPw8tGnRq_aNXc4BkC81gGmo89EfIlS-T38N_5d16Q7t2reZBbVvBGlw80dV0YKxiS" alt="Office Location Map" />
+            <iframe 
+              src="https://maps.google.com/maps?q=Durozen%20Technologies%20Private%20Limited&t=k&z=18&ie=UTF8&iwloc=&output=embed" 
+              width="100%" 
+              height="100%" 
+              style={{ border: 0 }} 
+              allowFullScreen 
+              loading="lazy" 
+              referrerPolicy="no-referrer-when-downgrade"
+              className="absolute inset-0 grayscale-[20%] hover:grayscale-0 transition-all duration-500"
+              title="Durozen Technologies Location Map"
+            ></iframe>
           </div>
         </div>
       </section>
